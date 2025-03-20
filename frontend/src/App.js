@@ -7,12 +7,13 @@ import './App.css';
 import HomePage from './pages/user/HomePage';
 import UserLayout from './components/layouts/UserLayout';
 import MenuPage from './pages/user/MenuPage';
+import LoginPage from './pages/auth/LoginPage';
+import RegisterPage from './pages/auth/RegisterPage';
 
 // Admin Components
 import AdminLayout from './components/layouts/AdminLayout';
 
 // Placeholder components - will be implemented later
-const Login = () => <div>Login Page (Coming Soon)</div>;
 const Register = () => <div>Register Page (Coming Soon)</div>;
 const DishDetail = () => <div>Dish Detail Page (Coming Soon)</div>;
 const Cart = () => <div>Cart Page (Coming Soon)</div>;
@@ -72,8 +73,8 @@ function App() {
         {/* User Routes */}
         <Route path="/" element={<UserLayout />}>
           <Route index element={<HomePage />} />
-          <Route path="login" element={<Login />} />
-          <Route path="register" element={<Register />} />
+          <Route path="login" element={<LoginPage />} />
+          <Route path="register" element={<RegisterPage />} />
           <Route path="menu" element={<MenuPage />} />
           <Route path="menu/:categoryId" element={<MenuPage />} />
           <Route path="dish/:id" element={<DishDetail />} />

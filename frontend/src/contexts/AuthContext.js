@@ -59,17 +59,31 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await axios.post(`${API_URL}/api/users/login`, { email, password });
+      // MOCK: Simulación de respuesta del servidor
+      // En una implementación real, esto sería:
+      // const response = await axios.post(`${API_URL}/api/users/login`, { email, password });
       
-      const { token, ...userData } = response.data;
-      
-      localStorage.setItem('token', token);
-      setUser(userData);
-      
-      toast.success('Login successful!');
-      return userData;
+      // Simulamos una verificación básica
+      if (email === 'test@example.com' && password === 'password123') {
+        const mockUserData = {
+          id: 1,
+          name: 'Test User',
+          email: email,
+          phone: '555-1234',
+          profilePhoto: null
+        };
+        
+        const token = 'mock-jwt-token-' + Date.now();
+        localStorage.setItem('token', token);
+        setUser(mockUserData);
+        
+        toast.success('Login successful!');
+        return mockUserData;
+      } else {
+        throw new Error('Invalid credentials');
+      }
     } catch (error) {
-      const message = error.response?.data?.message || 'Login failed. Please try again.';
+      const message = error.message || 'Login failed. Please try again.';
       setError(message);
       toast.error(message);
       throw error;
@@ -83,17 +97,27 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await axios.post(`${API_URL}/api/users/register`, userData);
+      // MOCK: Simulación de respuesta del servidor
+      // En una implementación real, esto sería:
+      // const response = await axios.post(`${API_URL}/api/users/register`, userData);
       
-      const { token, ...newUserData } = response.data;
+      // Simulamos un nuevo usuario registrado
+      const mockNewUser = {
+        id: 2,
+        name: userData.name,
+        email: userData.email,
+        phone: userData.phone || '',
+        profilePhoto: null
+      };
       
+      const token = 'mock-jwt-token-' + Date.now();
       localStorage.setItem('token', token);
-      setUser(newUserData);
+      setUser(mockNewUser);
       
       toast.success('Registration successful!');
-      return newUserData;
+      return mockNewUser;
     } catch (error) {
-      const message = error.response?.data?.message || 'Registration failed. Please try again.';
+      const message = error.message || 'Registration failed. Please try again.';
       setError(message);
       toast.error(message);
       throw error;
