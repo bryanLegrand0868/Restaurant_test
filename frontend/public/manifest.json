@@ -1,0 +1,9 @@
+{
+  "short_name": "Delicious Delivery",
+  "name": "Delicious Food Delivery App",
+  "icons": [],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#ff5722",
+  "background_color": "#ffffff"
+}

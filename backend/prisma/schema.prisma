@@ -1,0 +1,133 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User Model
+model User {
+  id           Int      @id @default(autoincrement())
+  name         String
+  email        String   @unique
+  password     String
+  phone        String?
+  profilePhoto String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  orders       Order[]
+}
+
+// Admin Model with different roles
+model Admin {
+  id        Int      @id @default(autoincrement())
+  username  String   @unique
+  password  String
+  role      String   // SUPER_ADMIN, KITCHEN_MANAGER, CUSTOMER_SUPPORT, CONTENT_MANAGER
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  logs      AdminLog[]
+}
+
+// Admin activity logs
+model AdminLog {
+  id        Int      @id @default(autoincrement())
+  adminId   Int
+  action    String
+  details   String
+  createdAt DateTime @default(now())
+
+  // Relations
+  admin     Admin    @relation(fields: [adminId], references: [id])
+}
+
+// Dish Categories
+model Category {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  description String?
+  imageUrl    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  dishes      Dish[]
+}
+
+// Dishes/Menu Items
+model Dish {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String
+  price       Float
+  imageUrl    String
+  dietary     String[] // Array of dietary tags like "Vegetarian", "Vegan", "Gluten-Free"
+  categoryId  Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  category    Category    @relation(fields: [categoryId], references: [id])
+  ingredients Ingredient[]
+  orderItems  OrderItem[]
+}
+
+// Ingredients for dishes
+model Ingredient {
+  id        Int      @id @default(autoincrement())
+  name      String
+  optional  Boolean  @default(false)
+  price     Float    @default(0) // Additional price if it costs extra
+  dishId    Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  dish      Dish     @relation(fields: [dishId], references: [id])
+}
+
+// Orders
+model Order {
+  id              Int       @id @default(autoincrement())
+  userId          Int
+  status          String    // PENDING, CONFIRMED, PREPARING, READY_FOR_DELIVERY, OUT_FOR_DELIVERY, DELIVERED, CANCELLED
+  totalPrice      Float
+  deliveryAddress String
+  paymentMethod   String
+  notes           String?
+  statusNote      String?   // For admin notes on status changes
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  completedAt     DateTime? // When the order was delivered or cancelled
+
+  // Relations
+  user            User       @relation(fields: [userId], references: [id])
+  orderItems      OrderItem[]
+
+  // Index for auto-deleting orders older than 30 days
+  @@index([createdAt(sort: Desc)])
+}
+
+// Order Items (individual dishes in an order)
+model OrderItem {
+  id         Int      @id @default(autoincrement())
+  orderId    Int
+  dishId     Int
+  quantity   Int
+  extras     String[]  // Additional ingredients/toppings
+  exclusions String[]  // Ingredients to exclude
+  createdAt  DateTime @default(now())
+
+  // Relations
+  order      Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  dish       Dish     @relation(fields: [dishId], references: [id])
+}
