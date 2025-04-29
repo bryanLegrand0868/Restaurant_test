@@ -1,20 +1,16 @@
 const express = require('express');
-const { 
-  createOrder, 
-  getOrderById, 
-  updateOrderStatus,
-  reorderPastOrder,
-  cancelOrder
-} = require('../controllers/orderController');
-const { authenticate } = require('../middleware/auth');
-
 const router = express.Router();
+const orderController = require('../controllers/orderController');
+const auth = require('../middleware/auth');
 
-// All routes are protected
-router.post('/', authenticate, createOrder);
-router.get('/:id', authenticate, getOrderById);
-router.put('/:id/status', authenticate, updateOrderStatus);
-router.post('/reorder/:id', authenticate, reorderPastOrder);
-router.put('/:id/cancel', authenticate, cancelOrder);
+// Protected routes
+router.use(auth);
+
+// Order operations
+router.post('/', orderController.createOrder);
+router.get('/', orderController.getUserOrders);
+router.get('/:id', orderController.getOrderById);
+router.put('/:id/status', orderController.updateOrderStatus);
+router.delete('/:id', orderController.cancelOrder);
 
 module.exports = router;

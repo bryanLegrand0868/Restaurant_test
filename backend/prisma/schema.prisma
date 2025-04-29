@@ -131,3 +131,26 @@ model OrderItem {
   order      Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
   dish       Dish     @relation(fields: [dishId], references: [id])
 }
+
+// User Model for authentication system
+model AuthUser {
+  id            Int      @id @default(autoincrement())
+  email         String   @unique
+  password      String
+  name          String
+  role          Role     @default(CUSTOMER)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  orders        Order[]
+  address       String?
+  phone         String?
+  profileImage  String?
+
+  @@index([email])
+}
+
+enum Role {
+  CUSTOMER
+  RESTAURANT
+  ADMIN
+}
